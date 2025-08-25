@@ -1,14 +1,17 @@
 {
   "name": "vite-project",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dynamics:serve": "vite serve packages/project/vite_vue/ --config packages/project/vite_vue/vite.config.js",
+    "dynamics:build": "vite build packages/project/vite_vue/ --config packages/project/vite_vue/vite.config.js --emptyOutDir"
   },
   "dependencies": {
+    "ant-design-vue": "^4.2.6",
     "vue": "^3.5.18"
   },
   "devDependencies": {
