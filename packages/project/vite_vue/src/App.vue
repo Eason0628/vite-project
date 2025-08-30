@@ -18,6 +18,7 @@ onMounted(() => {
 const handleTheme = (val) => {
         localStorage.setItem("THEME_TYPE", val || 1);
         let colorStr = {};
+        debugger;
         switch (String(val)) {
             case "1":
                 theme.value = themeStyle(theme1Color);
@@ -27,7 +28,8 @@ const handleTheme = (val) => {
                 theme.value = themeStyle(theme1Color);
                 colorStr = theme1Color;
         }
-
+        
+        console.log('theme.value',JSON.stringify(theme.value));
         // 给css透露颜色
         let str = "";
         Object.keys(colorStr).forEach((val) => {

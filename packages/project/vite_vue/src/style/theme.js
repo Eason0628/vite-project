@@ -46,7 +46,7 @@ export function themeStyle(themeColor) {
     return {
         components: {
             Button: {
-                lineHeight: 1,
+                lineHeight: 1, 
                 controlHeight: 32,
                 controlTmpOutline: "transparent",
                 controlOutlineWidth: 0,
