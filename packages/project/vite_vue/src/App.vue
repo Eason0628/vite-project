@@ -18,7 +18,6 @@ onMounted(() => {
 const handleTheme = (val) => {
         localStorage.setItem("THEME_TYPE", val || 1);
         let colorStr = {};
-        debugger;
         switch (String(val)) {
             case "1":
                 theme.value = themeStyle(theme1Color);
