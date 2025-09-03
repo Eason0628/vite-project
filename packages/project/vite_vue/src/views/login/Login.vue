@@ -40,7 +40,7 @@
 import { Icon } from "@common/components/icons";
 import { useRouter } from "vue-router";
 import { reactive, ref, toRefs, nextTick, onMounted } from "vue";
-
+import { encrypt, decrypt } from "@/js/aes";
 export default {
     components: { Icon },
     name: "LoginView",
@@ -62,11 +62,52 @@ export default {
             imgSrc: "/images/Logo_ht.png",
         });
 
-        return { 
+        const onSubmit = () => {
+            formRef.value.validate().then(() => {
+                setTimeout(() => {
+                    state.user = {
+                        user: 'admin',
+                        password: '123456'
+                    };
+                    if (state.rememberMe)
+                        setCookit(state.user.user, state.user.password, 7);
+                    else setCookit("", "", -1);
+                    if (router.currentRoute.value.query.redirect)
+                        router.push(router.currentRoute.value.query.redirect);
+                    else router.push("/");
+                    sessionStorage.removeItem("ROUTES");
+                    localStorage.setItem('userIp', res.data.userIp)
+                }, 2000);
+            }).catch(() => { });
+        }
+
+        const setCookit = (name, password, exdays) => {
+            let exDate = new Date();
+            exDate.setTime(exDate.getTime() + 24 * 60 * 60 * 1000 * exdays);
+            document.cookie = `user=${name};path=/;expires=${exDate.toGMTString()}`;
+            document.cookie = `password=${encrypt(password)};path=/;expires=${exDate.toGMTString()}`;
+        };
+
+        const getCookie = () => {
+            if (document.cookie.length > 0) {
+                let arr = document.cookie.split("; ");
+                for (let i = 0; i < arr.length; i++) {
+                    let arr2 = arr[i].split("=");
+                    if (arr2[0] === "user") state.user.user = arr2[1];
+                    else if (arr2[0] === "password")
+                        state.user.password = decrypt(arr2[1]);
+                }
+                state.rememberMe = true;
+            }
+        };
+
+        getCookie();
+
+        return {
             ...toRefs(state),
             formRef,
-            
-         }
+            onSubmit,
+        }
     }
 };
 </script>
@@ -79,7 +120,8 @@ export default {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     width: 100%;
-    height: 100%; 
+    height: 100%;
+
     .title {
         flex: 2;
         color: #fff;
@@ -87,50 +129,62 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
-    } 
+    }
+
     .formRow {
-        flex: 3; 
+        flex: 3;
+
         .login-panel-form {
             border-radius: 4px;
             box-shadow: 0 0 16px rgba(0, 0, 0, 0.3);
             padding: 16px;
             width: 340px;
             background: #fff;
-            height: 360px; 
+            height: 360px;
+
             .titlePic {
                 height: 0px;
                 margin-bottom: 10px;
-            } 
+            }
+
             .topTitle {
                 font-size: 18px;
                 margin: 10px 0;
                 text-align: center;
                 letter-spacing: 2px;
                 font-weight: 600;
-            } 
+            }
+
             .ant-form {
-                margin: 0 20px; 
+                margin: 0 20px;
+
                 .ant-input-affix-wrapper {
                     border-color: var(--primary-color);
-                } 
+                }
+
                 .rememberMeBefore {
                     margin-bottom: 4px;
-                } 
+                }
+
                 .rememberMe {
-                    margin-bottom: 10px; 
+                    margin-bottom: 10px;
+
                     .ant-checkbox-wrapper {
                         color: #aaa;
                     }
-                } 
+                }
+
                 .ant-input-prefix {
                     .anticon {
                         color: var(--primary-color);
                     }
-                } 
+                }
+
                 :deep(.ant-input) {
                     height: 30px;
                 }
-            } 
+            }
+
             .commitButton {
                 width: 100%;
                 background-image: linear-gradient(to right, #589eff, #7bc1ff) !important;
@@ -139,7 +193,8 @@ export default {
                 font-size: 16px;
                 color: #fff !important;
                 border-color: #ccc;
-            } 
+            }
+
             .commitButton:hover {
                 background-image: linear-gradient(to right, #589eff, #7bc1ff) !important;
                 color: #fff !important;
