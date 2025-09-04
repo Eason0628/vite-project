@@ -41,6 +41,8 @@ import { Icon } from "@common/components/icons";
 import { useRouter } from "vue-router";
 import { reactive, ref, toRefs, nextTick, onMounted } from "vue";
 import { encrypt, decrypt } from "@/js/aes";
+import { USER_IP } from "@/js/constant";
+
 export default {
     components: { Icon },
     name: "LoginView",
@@ -63,24 +65,21 @@ export default {
         });
 
         const onSubmit = () => {
-            formRef.value.validate().then(() => {
-                setTimeout(() => {
-                    state.user = {
-                        user: 'admin',
-                        password: '123456'
-                    };
-                    if (state.rememberMe)
-                        setCookit(state.user.user, state.user.password, 7);
-                    else setCookit("", "", -1);
-                    if (router.currentRoute.value.query.redirect)
-                        router.push(router.currentRoute.value.query.redirect);
-                    else router.push("/");
-                    sessionStorage.removeItem("ROUTES");
-                    localStorage.setItem('userIp', res.data.userIp)
-                }, 2000);
-            }).catch(() => { });
+            // formRef.value.validate().then(() => {    } 
+            debugger
+            state.user = {
+                user: 'admin',
+                password: '123456'
+            };
+            if (state.rememberMe)
+                setCookit(state.user.user, state.user.password, 7);
+            else setCookit("", "", -1);
+            if (router.currentRoute.value.query.redirect)
+                router.push(router.currentRoute.value.query.redirect);
+            else router.push("/");
+            sessionStorage.removeItem("ROUTES");
+            localStorage.setItem('userIp', USER_IP)
         }
-
         const setCookit = (name, password, exdays) => {
             let exDate = new Date();
             exDate.setTime(exDate.getTime() + 24 * 60 * 60 * 1000 * exdays);

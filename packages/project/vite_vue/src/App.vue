@@ -27,8 +27,6 @@ const handleTheme = (val) => {
                 theme.value = themeStyle(theme1Color);
                 colorStr = theme1Color;
         }
-        
-        console.log('theme.value',JSON.stringify(theme.value));
         // 给css透露颜色
         let str = "";
         Object.keys(colorStr).forEach((val) => {
