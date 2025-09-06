@@ -42,6 +42,7 @@ import { useRouter } from "vue-router";
 import { reactive, ref, toRefs, nextTick, onMounted } from "vue";
 import { encrypt, decrypt } from "@/js/aes";
 import { USER_IP } from "@/js/constant";
+import { login } from "@/service/auth";
 
 export default {
     components: { Icon },
@@ -65,21 +66,22 @@ export default {
         });
 
         const onSubmit = () => {
-            // formRef.value.validate().then(() => {    } 
-            debugger
-            state.user = {
-                user: 'admin',
-                password: '123456'
-            };
-            if (state.rememberMe)
-                setCookit(state.user.user, state.user.password, 7);
-            else setCookit("", "", -1);
-            if (router.currentRoute.value.query.redirect)
-                router.push(router.currentRoute.value.query.redirect);
-            else router.push("/");
-            sessionStorage.removeItem("ROUTES");
-            localStorage.setItem('userIp', USER_IP)
+            formRef.value.validate().then(() => {
+                login(state.user).then(res => {
+                    if (state.rememberMe)
+                        setCookit(state.user.user, state.user.password, 7);
+                    else setCookit("", "", -1);
+                    if (router.currentRoute.value.query.redirect)
+                        router.push(router.currentRoute.value.query.redirect);
+                    else router.push("/");
+                    sessionStorage.removeItem("ROUTES");
+                    localStorage.setItem('userIp', res.data.userIp)
+                })
+            }).catch(() => {
+                console.log("校验失败");
+            })
         }
+
         const setCookit = (name, password, exdays) => {
             let exDate = new Date();
             exDate.setTime(exDate.getTime() + 24 * 60 * 60 * 1000 * exdays);

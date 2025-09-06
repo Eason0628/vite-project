@@ -6,6 +6,13 @@ import router from "@/js/router";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 
+const DEFAULT_REQUEST_BODY = {
+    a1: "APP-UvygAWn-4519950447516193282-2",
+    a2: "KEY035UvyhbsvXDuoopaM2b3H4jRRnjnBpt53gOXsdbj3",
+    t1: "2025-09-06 09:53:33"
+};
+
+
 const service = axios.create({
     baseURL: "/api",
     timeout: 100000,
@@ -29,8 +36,12 @@ service.defaults.headers["intesim_thing_code"] = THING_CODE;
 service.interceptors.request.use(
     (config) => {
         config.headers[TOKEN_KEY] = store.getters["user/token"];
-        if (config.url == "plan/analysis/cancel") {
-            config.headers["Content-Type"] = "text/plain";
+        if (
+            config.headers["Content-Type"] === "application/json; charset=utf-8" &&
+            ['post', 'put', 'patch', 'delete'].includes(config.method?.toLowerCase())
+        ) {
+            const userData = config.data || {};
+            config.data = { ...DEFAULT_REQUEST_BODY, ...userData };
         }
         startLoading();
         return config;
@@ -43,8 +54,12 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     (response) => {
         endLoading();
-        if (response.headers[TOKEN_KEY]) {
-            store.commit("user/setToken", response.headers[TOKEN_KEY]);
+        // if (response.headers[TOKEN_KEY]) {
+        //     store.commit("user/setToken", response.headers[TOKEN_KEY]);
+        // }
+        const TEST_TOKEN_KEY = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTg1NzEyNzEzOSwiY3JlYXRlZCI6MTc1NzEyNzE0MDg5MiwidGhpbmdDb2RlIjoicDYwMV9tZCIsInNpbmdsZVBvaW50IjpmYWxzZX0.aQge_RgNbEL1gYA8goxnWdOlRk57WBf8XM_n8XSeaGlqxuZG8b7jrRey1LBwOK78ZhZ6difIhO__oqmJA22Oxg"
+        if (TEST_TOKEN_KEY) {
+            store.commit("user/setToken", TEST_TOKEN_KEY);
         }
         return response.data;
     },
